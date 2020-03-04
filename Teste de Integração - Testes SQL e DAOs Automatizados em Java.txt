@@ -1,0 +1,46 @@
+Escrevendo o primeiro teste de integração:
+	Mock Object: Simular outras classes na hora de escrevertestes de unidade.
+	DAO é a classe que geralmente esconde toda a complexidade de acesso ao banco de Dados. 
+	A única maneira de saber se funciona corretamente é batendo no banco de dados
+	HSQLD:  um banco simples escrito em Java. Banco de dados em memória.
+	Sempre que abrimos uma conexÃ£o com o banco de dados, precisamos fechar.
+	
+	SEMPRE QUE TEMOS CLASSE CUJA A TAREFA É SE COMUNICAR COM UM SISTEMA EXTERNO, NÃƒO FAZ SENTIDO A GENTE FAZER USO DE MOCKS. DEVEMOS BATER NESSE SISTEMA DE VERDADE.
+	Teste de integraÃ§Ã£o: Testamos a integraÃ§Ã£o da nossa classe com o sistema externo.
+	DiferenÃ§a entre um teste de integraÃ§Ã£o e um teste de unidade:
+		Teste de unidade testa a classe de maneira isolada; 
+		Teste de integraÃ§Ã£o testa a classe integrando com um serviço externo real.
+		
+	Quando testamos conexão com Banco de Dados, uma boa prática é fazer isso dentro de um contexto de transação.
+		@Before
+		public void antes(){
+			//Geralmente colocamos aqui
+			//Criação da sessão ou conexão com o Banco de dados.
+			//Instanciação dos Daos
+			//E beginTransaction
+			
+			session = new CriadorDeSessao().getSession();// Cria conexão com o banco de dados de verdade
+			usuarioDao = new UsuarioDao(session);
+			
+			session.beginTransaction();
+		}
+		
+		@After
+		public void depois() {
+			//Geralmente colocamos aqui
+			//RollBack da transação
+			//Fechamos a conexão com o banco de dados.
+			session.getTransaction().rollback(); //quando acabar o teste, o banco vai voltar atrás tudo o que aconteceu. 
+												//O banco de dados vai estar sempre limpo. Um teste não vai atrapalhar o outro
+			session.close();
+		}
+		Os Testes tem que ser independentes.
+		Um teste não pode sujar o cenário do outro.
+		Abrir e fechar a transação é uma ótima maneira pra resolver esse problema.
+		
+		Teste de integração são mais caros porque:
+			Bate no banco de dados.
+			Se comunica com outro sistema.
+			
+		Mante o banco de dados limpo é fundamental para que a bateria testes cresça com qualidade.	
+			
